@@ -73,7 +73,7 @@ if (isset($_POST["commit"])) {
     } else {
 
         // Only update if necessary
-        $log = new RecordLog($zone);
+        $log = new RecordLog($zid);
         $log->log_prior($_POST["rid"], true);
         if(!$log->has_changed($_POST, true)) {
             success(SUC_ZONE_NOCHANGE);
