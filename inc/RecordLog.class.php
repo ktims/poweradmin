@@ -99,6 +99,7 @@ class RecordLog {
 
     private function log_records_data($record) {
         global $db;
+        global $db_type;
 
         $query = "INSERT INTO log_records_data (domain_id, name, type, content, ttl, prio, change_date) VALUES ("
             . $db->quote($record['domain_id'], 'integer') . ","
@@ -108,8 +109,16 @@ class RecordLog {
             . $db->quote($record['ttl'], 'integer') . ","
             . $db->quote($record['prio'], 'integer') . ","
             . $db->quote($record['change_date'], 'integer') . ")";
-        $db->exec($query);
-        return $db->lastInsertId();
+        $result = $db->exec($query);
+
+        if (PEAR::isError($result)) {
+            error($result->getMessage());
+            // Don't commit changes if we can't log them
+            $db->rollback();
+            return false;
+        }
+
+        return ($db_type == 'pgsql') ? $db->lastInsertId('log_records_data_id_seq') : $db->lastInsertId();
     }
 
     public function writeNew() {
@@ -121,12 +130,15 @@ class RecordLog {
         $fullname = $this->getUser();
 
         // TODO: Log approving user (col                                                    v here)
-        $log_insert_record = "INSERT INTO log_records (log_records_type_id, timestamp, user, after) VALUES ("
-            . $db->quote($record_type_id, 'integer') . ","
-            . $db->quote($now, 'text') . ","
-            . $db->quote($fullname, 'text') . ","
-            . $db->quote($after_id, 'integer') . ")";
-        $db->exec($log_insert_record);
+        $log_insert_record = $db->prepare("INSERT INTO log_records (log_records_type_id, timestamp, username, after) VALUES (?, ?, ?, ?)");
+        $result = $log_insert_record->execute(array($record_type_id, $now, $fullname, $after_id));
+
+        if (PEAR::isError($log_insert_record)) {
+            error($log_insert_record->getMessage());
+            $db->rollback();
+            return false;
+        }
+       
     }
 
     public function writeChange() {
@@ -139,13 +151,21 @@ class RecordLog {
         $user = $this->getUser();
 
         // TODO: Log approving user (col                                                    v here)
-        $log_insert_record = "INSERT INTO log_records (log_records_type_id, timestamp, user, prior, after) VALUES ("
+        $log_insert_record = "INSERT INTO log_records (log_records_type_id, timestamp, username, prior, after) VALUES ("
             . $db->quote($record_type_id, 'integer') . ","
             . $db->quote($now, 'text') . ","
             . $db->quote($user, 'text') . ","
             . $db->quote($prior_id, 'integer') . ","
             . $db->quote($after_id, 'integer') . ")";
-        $db->exec($log_insert_record);
+        $result = $db->exec($log_insert_record);
+
+        if (PEAR::isError($result)) {
+             error($result->getMessage());
+             // Don't commit changes if we can't log them
+             $db->rollback();
+             return false;
+        }
+
     }
 
     public function writeDelete() {
@@ -157,12 +177,19 @@ class RecordLog {
         $user = $this->getUser();
 
         // TODO: Log approving user (col                                                    v here)
-        $log_insert_record = "INSERT INTO log_records (log_records_type_id, timestamp, user, prior) VALUES ("
+        $log_insert_record = "INSERT INTO log_records (log_records_type_id, timestamp, username, prior) VALUES ("
             . $db->quote($record_type_id, 'integer') . ","
             . $db->quote($now, 'text') . ","
             . $db->quote($user, 'text') . ","
             . $db->quote($prior_id, 'integer') . ")";
-        $db->exec($log_insert_record);
+        $result = $db->exec($log_insert_record);
+
+        if (PEAR::isError($result)) {
+             error($result->getMessage());
+             // Don't commit changes if we can't log them
+             $db->rollback();
+             return false;
+        }
     }
 
     public function has_changed($record) {

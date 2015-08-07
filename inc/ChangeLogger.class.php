@@ -144,7 +144,7 @@ class ChangeLogger
 (SELECT
     timestamp                     as time,
     record_type.name              as event,
-    record.user,
+    record.username,
     record.user_approve,
     domain_prior.name as domain_prior,
     domain_after.name as domain_after,
@@ -183,7 +183,7 @@ UNION
 (SELECT
     timestamp                      as time,
     domain_type.name               as event,
-    domain.user,
+    domain.username,
     domain.user_approve,
     domain.domain_name,
     null, null, null, null, null, null, null, null, null, null, null, null, null
@@ -203,7 +203,7 @@ ORDER BY time DESC;";
     {
         $s = "";
         $rowspan_attr = $rowspan > 0 ? " rowspan=" . $rowspan : "";
-        $fields = array('time', 'event', 'user', 'approving_user', 'domain');
+        $fields = array('time', 'event', 'username', 'approving_user', 'domain');
 
         foreach($fields as $field) {
             $data = '';

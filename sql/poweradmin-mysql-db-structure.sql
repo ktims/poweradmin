@@ -156,7 +156,7 @@ CREATE TABLE IF NOT EXISTS `log_domains` (
   `log_domains_type_id` INT          NOT NULL,
   `domain_name`         VARCHAR(255) NOT NULL,
   `timestamp`           DATETIME     NOT NULL,
-  `user`                VARCHAR(64)  NOT NULL,
+  `username`                VARCHAR(64)  NOT NULL,
   `user_approve`        VARCHAR(64),
   PRIMARY KEY (`id`),
 
@@ -171,7 +171,7 @@ CREATE TABLE IF NOT EXISTS `log_records` (
   `id`                    INT         NOT NULL AUTO_INCREMENT,
   `log_records_type_id`   INT         NOT NULL,
   `timestamp`             DATETIME    NOT NULL,
-  `user`                  VARCHAR(64) NOT NULL,
+  `username`                  VARCHAR(64) NOT NULL,
   `user_approve`          VARCHAR(64),
   `prior`                 INT             NULL,
   `after`                 INT             NULL,

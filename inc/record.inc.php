@@ -431,6 +431,7 @@ function edit_record($record) {
  */
 function add_record($zone_id, $name, $type, $content, $ttl, $prio, RecordLog &$log) {
     global $db;
+    global $db_type;
     global $pdnssec_use;
 
     if (do_hook('verify_permission', 'zone_content_edit_others')) {
@@ -474,7 +475,12 @@ function add_record($zone_id, $name, $type, $content, $ttl, $prio, RecordLog &$l
                 $response = $db->rollback();
                 return false;
             } else {
-                $log->log_after($db->lastInsertId());
+		if ($db_type == 'pgsql')
+                    $record_id = $db->lastInsertId('records_id_seq');
+                else
+                    $record_id = $db->lastInsertId();
+
+                $log->log_after($record_id);
 
                 $response = $db->commit();
                 if ($type != 'SOA') {

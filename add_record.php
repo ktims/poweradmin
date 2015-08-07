@@ -35,6 +35,8 @@ include_once("inc/RecordLog.class.php");
 
 global $pdnssec_use;
 
+global $pdnssec_use;
+
 /*
   Get permissions
  */
@@ -170,7 +172,6 @@ if (isset($_POST["commit"])) {
 			    success(SUC_EXEC_PDNSSEC_RECTIFY_ZONE);
 		    }
 	    }
-
             $name = $type = $content = $ttl = $prio = "";
         }
     }
