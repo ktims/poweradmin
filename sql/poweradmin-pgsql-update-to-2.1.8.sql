@@ -12,7 +12,7 @@ CREATE TABLE log_records_type (
 
 CREATE TABLE log_records_data (
     id SERIAL PRIMARY KEY,
-    domain_id INTEGER REFERENCES domains(id),
+    domain_id INTEGER,
     name varchar(255),
     type varchar(6),
     content text,

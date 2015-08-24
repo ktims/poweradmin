@@ -17,7 +17,7 @@ class DomainLog {
         $domain_name = $this->db->queryOne("SELECT name FROM domains WHERE id = " . $this->db->quote($domain_id));
 
         // TODO: Log approving user (col                                                                v here)
-        $log_delete_domain = "INSERT INTO log_domains (log_domains_type_id, domain_name, timestamp, user) VALUES ("
+        $log_delete_domain = "INSERT INTO log_domains (log_domains_type_id, domain_name, timestamp, username) VALUES ("
             . $this->db->quote($domain_log_type, 'integer') . ","
             . $this->db->quote($domain_name, 'text') . ","
             . $this->db->quote($now, 'text') . ","
